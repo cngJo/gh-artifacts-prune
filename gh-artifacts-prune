@@ -2,7 +2,7 @@
 set -e
 
 usage() {
-  echo "Usage: gh artifacts-prune [<REPOSITORY>]"
+  echo "Usage: gh artifacts-prune [<REPOSITORY>] [-n|--no-interaction]"
   echo "       NOTE: If no repository is given, the repository of the current directory is used."
   exit 1;
 }
@@ -13,13 +13,21 @@ if ! type -p jq >/dev/null; then
   exit 1
 fi
 
+# Parse command line options
+NO_INTERACTION=false
+while [[ "$#" -gt 0 ]]; do
+  case $1 in
+    -n|--no-interactive) NO_INTERACTION=true; shift ;;
+    *) repo="$1"; shift ;;
+  esac
+done
+
 # Determine Repo, either from argument or from git remote
-repo="$1"
 if [[ -z "${repo}" ]]; then
     if [[ ! -d ".git" ]]; then
-        echo "ERROR: No repository given and no git repository found in current directory." >&2
+        echo "ERROR: No repository given and no git repository found in the current directory." >&2
         usage
-    fi  
+    fi
     repo=$(git remote get-url origin | sed -E 's/.*github.com[:/](.*)\.git/\1/')
 fi
 
@@ -36,16 +44,20 @@ fi
 
 echo "Found artifacts: ${COUNT_ARTIFACTS}"
 if [[ "${COUNT_ARTIFACTS}" -gt 100 ]]; then
-    echo "WARNING: More than 100 artifacts found. This is the maximum page size in the Github API."
+    echo "WARNING: More than 100 artifacts found. This is the maximum page size in the GitHub API."
     echo "         You might need to execute this command multiple times to delete all artifacts."
     echo
 fi
 
-read -p "Do you want to continue deleting them? [y/N] " choice
-case "$choice" in
-  y|Y ) echo "Deleting artifacts...";;
-  * ) echo "Aborting..."; exit 0;;
-esac
+if [ "${NO_INTERACTION}" = true ]; then
+  echo "Skipping interactive prompt as --no-interaction flag is set."
+else
+  read -p "Do you want to continue deleting them? [y/N] " choice
+  case "$choice" in
+    y|Y ) echo "Deleting artifacts...";;
+    * ) echo "Aborting..."; exit 0;;
+  esac
+fi
 
 echo "${IDS}" | while read -r id; do
     echo "Deleting artifact ${id}..."
@@ -53,5 +65,5 @@ echo "${IDS}" | while read -r id; do
         --method DELETE \
         -H "Accept: application/vnd.github+json" \
         -H "X-GitHub-Api-Version: 2022-11-28" \
-        "/repos/${repo}/actions/artifacts/${id}" 
+        "/repos/${repo}/actions/artifacts/${id}"
 done
