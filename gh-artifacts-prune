@@ -33,7 +33,7 @@ fi
 
 echo "Pruning artifacts for ${repo}..."
 
-RESULT=$(gh api "/repos/${repo}/actions/artifacts")
+RESULT=$(gh api "/repos/${repo}/actions/artifacts?per_page=100")
 IDS=$(echo "${RESULT}" | jq -r '.artifacts[] | .id')
 COUNT_ARTIFACTS=$(echo "${RESULT}" | jq -r '.total_count')
 
