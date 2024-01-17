@@ -18,7 +18,7 @@ gh extension install cngJo/gh-artifacts-prune
 > There will be a warning if the maximum page size is reached.
 
 ```console
-gh artifacts-prune [<repo>]
+gh artifacts-prune [<REPOSITORY>] [-n|--no-interaction]
 ```
 
 If no repository is given, the repository of the current directory is used.
@@ -27,5 +27,5 @@ If no repository is given, the repository of the current directory is used.
 This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
 
 <div align="center">
-    <span>&copy; 2023, Johannes Przymusinski</span>
+    <span>&copy; 2023 - 2024, Johannes Przymusinski</span>
 </div>
