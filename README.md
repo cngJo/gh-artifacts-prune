@@ -1,4 +1,6 @@
-# gh artifactrs-prune
+<div align="center">
+    <h1>gh artifacts-prune</h1>
+</div>
 
 A GitHub (`gh`) CLI extension to prune action artifacts from a repository.
 
