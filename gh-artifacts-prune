@@ -28,7 +28,7 @@ if [[ -z "${repo}" ]]; then
         echo "ERROR: No repository given and no git repository found in the current directory." >&2
         usage
     fi
-    repo=$(git remote get-url origin | sed -E 's/.*github.com[:/](.*)\.git/\1/')
+    repo=$(git remote get-url origin | sed -E 's/.*github.com[:/](.*?)(\.git|$)/\1/')
 fi
 
 echo "Pruning artifacts for ${repo}..."
